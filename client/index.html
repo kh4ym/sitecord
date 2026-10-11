@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+  FILE: client/index.html
+  Vite entry page for the SiteCord web app. It only mounts the React tree at
+  #root from /src/main.jsx; routes, styles and data all live in src/. The
+  favicon is an inline SVG so there is no extra request, and the two Google
+  fonts (Manrope for text, Unbounded for display) are the only external assets.
+  In production the built copy is served by the Express server (DEPLOY.md).
+  During `npm run dev` Vite serves this file and rewrites the script tag to
+  load the JSX through its own transform; `npm run build` turns it into
+  client/dist/index.html with hashed asset links.
+  HTML syntax: an element is an opening tag, its children and a closing tag;
+  tags ending in " />" (and void tags such as meta) have no children.
+  Comments look like this block.
+-->
+<!-- The root element; lang="en" tells browsers and screen readers the page language. -->
+<html lang="en">
+  <!-- The head section holds page metadata; nothing in it is drawn on screen.
+       (Don't write the literal tag names in comments here: Vite's dev server
+       searches the file for them to inject its own scripts and would match the comment.) -->
+  <head>
+    <!-- Text encoding: UTF-8 so Urdu and symbols like ≈ display correctly. -->
+    <meta charset="UTF-8" />
+    <!-- Mobile layout: use the device width, no initial zoom, and draw under phone notches (viewport-fit=cover). -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- Colour of the browser's address bar on mobile; matches the app background. -->
+    <meta name="theme-color" content="#f4f2ee" />
+    <!-- Summary shown by search engines and link previews. -->
+    <meta name="description" content="Your house, on the record: evidence-backed progress and spending for homeowners building in Pakistan." />
+    <!-- Text in the browser tab. -->
+    <title>SiteCord</title>
+    <!-- Favicon as an inline SVG "data:" URL (%23 is an escaped # inside the URL). -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='9' fill='%232447f5'/><path d='M8.5 16 16 9.5l7.5 6.5v8h-15z' fill='none' stroke='white' stroke-width='2.4' stroke-linejoin='round'/><circle cx='16' cy='19.5' r='2.2' fill='white'/></svg>" />
+    <!-- preconnect opens the connection to Google Fonts early so fonts arrive sooner. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <!-- The font files themselves come from gstatic; crossorigin is required for font requests. -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Stylesheet loading Manrope (weights 400-800) and Unbounded (500-700); display=swap shows fallback text until they load. -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Unbounded:wght@500..700&display=swap" rel="stylesheet" />
+  </head>
+  <!-- The body section is the visible page. -->
+  <body>
+    <!-- Empty container; main.jsx renders the whole React app inside it. -->
+    <div id="root"></div>
+    <!-- type="module" loads the file as an ES module (allows import/export). -->
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

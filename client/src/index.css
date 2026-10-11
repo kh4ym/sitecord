@@ -1,0 +1,259 @@
+/*
+ * FILE: client/src/index.css
+ * The app's one global stylesheet, imported by main.jsx. Vite runs it through
+ * the Tailwind 4 plugin (see vite.config.js), which reads the tokens below
+ * and generates the utility classes the JSX uses in className="...".
+ */
+/* @import pulls in Tailwind itself: its reset, theme defaults and utilities. */
+@import "tailwindcss";
+
+/*
+ * SiteCord theme. Warm off-white canvas, white cards with hairline borders,
+ * a wide display face for titles, near-black for primary actions and one
+ * electric-blue accent. Status always pairs a colour with a word (and usually
+ * a dot or icon), never colour alone.
+ *
+ * Sections: tokens (@theme, which Tailwind 4 turns into utilities such as
+ * bg-canvas, text-meta, rounded-card, shadow-pop), base element styles,
+ * component classes used across pages, then the reduced-motion override.
+ * The Urdu font is loaded on demand by I18nProvider; Manrope and Unbounded
+ * come from index.html.
+ *
+ * CSS syntax: `selector { property: value; }`. Names starting with `--` are
+ * custom properties (CSS variables), read anywhere with var(--name).
+ */
+
+/* ---------- Tokens ---------- */
+/* @theme is Tailwind 4's block for design tokens: each --name becomes both a
+   CSS variable on :root and a family of utility classes (the prefix decides
+   which: --color-* -> bg-/text-/border-*, --text-* -> text-*, and so on). */
+@theme {
+  /* Font stacks: the first installed font in each comma list is used. Generates font-sans, font-display, ... */
+  --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Unbounded", "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-urdu: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, monospace;
+
+  /* Neutral colours (hex #rrggbb): page background, card surface, inset areas, borders, and four text inks from darkest to lightest. */
+  --color-canvas: #f4f2ee;
+  --color-surface: #ffffff;
+  --color-sunken: #efede8;
+  --color-line: #e6e3dd;
+  --color-line-strong: #d5d1c9;
+  --color-line-input: #8c887f; /* 3.5:1 on white: inputs, switches when off */
+  --color-ink: #111111;
+  --color-ink-2: #4e4b45;
+  --color-ink-3: #6f6b64; /* 5.3:1 on white, 4.7:1 on the canvas */
+  --color-ink-4: #a29e96; /* disabled and decoration only */
+
+  /* Electric-blue accent scale: 50 is the palest tint, 900 the darkest shade. */
+  --color-accent-50: #eef1ff;
+  --color-accent-100: #dfe5ff;
+  --color-accent-300: #9aacff;
+  --color-accent-500: #4a66f7;
+  --color-accent-600: #2447f5;
+  --color-accent-700: #1a36d1;
+  --color-accent-800: #172ca6;
+  --color-accent-900: #15287f;
+
+  /* Warning (amber) scale. */
+  --color-warn-50: #fff4d9;
+  --color-warn-100: #ffe9b3;
+  --color-warn-500: #e39a00;
+  --color-warn-600: #c98500;
+  --color-warn-800: #7a4e00;
+
+  /* Danger (red) scale. */
+  --color-danger-50: #fdedec;
+  --color-danger-100: #fbe0de;
+  --color-danger-500: #d03b3b;
+  --color-danger-700: #b42318;
+
+  /* Type scale: 2xs/meta/body/title for text, head for section labels, stat/display/hero for figures and titles. */
+  /* Each --text-X sets a font size (rem = multiples of the root font size, usually 16px) and
+     --text-X--line-height its paired line height; together they make the text-X utility. */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-meta: 0.8125rem;
+  --text-meta--line-height: 1.25rem;
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.5rem;
+  --text-title: 1.0625rem;
+  --text-title--line-height: 1.5rem;
+  --text-head: 0.75rem;
+  --text-head--line-height: 1rem;
+  --text-stat: 1.375rem;
+  --text-stat--line-height: 1.15;
+  --text-display: 1.75rem;
+  --text-display--line-height: 1.08;
+  --text-display-lg: 2.25rem;
+  --text-display-lg--line-height: 1.04;
+  --text-hero: 2.75rem;
+  --text-hero--line-height: 0.98;
+  --text-hero-lg: 4rem;
+  --text-hero-lg--line-height: 0.96;
+
+  /* Radii grow with the element: field < tile < card < bar (tab bar) < sheet. */
+  /* Generates rounded-field, rounded-tile, rounded-card, ... */
+  --radius-field: 0.875rem;
+  --radius-tile: 1rem;
+  --radius-card: 1.25rem;
+  --radius-bar: 1.375rem;
+  --radius-sheet: 1.75rem;
+
+  /* Shadows: `x y blur [spread] colour`; rgb(r g b / alpha) is a colour with transparency;
+     comma-separated shadows stack. Generates shadow-card, shadow-float, shadow-pop, shadow-accent. */
+  --shadow-card: 0 1px 2px rgb(17 17 17 / 0.03);
+  --shadow-float: 0 12px 32px -12px rgb(17 17 17 / 0.28), 0 2px 8px rgb(17 17 17 / 0.06);
+  --shadow-pop: 0 24px 56px -20px rgb(17 17 17 / 0.32), 0 4px 12px rgb(17 17 17 / 0.06);
+  --shadow-accent: 0 20px 40px -20px rgb(36 71 245 / 0.6);
+
+  /* Easing curve (fast start, gentle stop) for transitions; generates ease-snappy. */
+  --ease-snappy: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* CSS-only motion for things GSAP doesn't touch: menus, popovers, loaded images. */
+  /* --animate-X generates the animate-X utility: `keyframes-name duration timing`. */
+  --animate-fade-in: fade-in 0.18s ease-out;
+  --animate-pop-in: pop-in 0.2s cubic-bezier(0.2, 0.8, 0.3, 1);
+  /* @keyframes defines an animation; `from` is the start state and the element animates to its normal style. */
+  @keyframes fade-in { from { opacity: 0; } }
+  /* Start transparent, 6px lower and slightly smaller. */
+  @keyframes pop-in { from { opacity: 0; transform: translateY(6px) scale(0.98); } }
+}
+
+/* ---------- Base ---------- */
+/* @layer base puts these rules in Tailwind's lowest layer, so any utility class overrides them. */
+@layer base {
+  /* Stop iOS Safari enlarging text when a phone is turned sideways. */
+  html { -webkit-text-size-adjust: 100%; }
+  /* A comma list applies the rule to each selector; #root is the element with id="root". */
+  html, body, #root { min-height: 100%; }
+  /* Default page look: canvas background, ink text, Manrope at body size. */
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.5;
+    /* Smoother font rendering on macOS (vendor-prefixed properties). */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  /* ::selection is a pseudo-element: the highlight colour of selected text. */
+  ::selection { background: var(--color-accent-100); }
+  /* :focus-visible matches an element focused by keyboard: draw a blue ring. */
+  :focus-visible { outline: 2px solid var(--color-accent-600); outline-offset: 2px; }
+  /* Form controls inherit the page font instead of the browser's default. */
+  input, textarea, select, button { font: inherit; }
+  /* Pointer (hand) cursor on buttons, normal arrow when disabled. */
+  button { cursor: pointer; }
+  button:disabled { cursor: default; }
+  /* Attribute selector [hidden]; !important beats any other display rule. */
+  [hidden] { display: none !important; }
+
+  /* Urdu: Latin stays in Manrope; Urdu letters fall back to Nastaliq, which needs room. */
+  /* :root[lang="ur"] matches <html lang="ur"> (set by I18nProvider); the space means "body inside it". */
+  :root[lang="ur"] body { font-family: var(--font-sans), var(--font-urdu); line-height: 1.95; }
+  /* :is(a, b, c) matches any of the listed classes inside an Urdu page. */
+  :root[lang="ur"] :is(.font-display, .title, .head) {
+    font-family: var(--font-display), var(--font-urdu);
+    text-transform: none; /* Urdu has no capitals */
+    letter-spacing: 0;
+    line-height: 1.75;
+  }
+}
+
+/* ---------- Component classes and utilities ---------- */
+/* @layer components sits between base and utilities, so utilities still override these classes. */
+@layer components {
+  /* Amounts that line up in columns. Big standalone figures stay proportional. */
+  /* A class selector (.num) matches className="num"; tabular-nums gives every digit the same width. */
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* White card with a hairline border, rounded corners and a faint shadow. */
+  .card { background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-card); box-shadow: var(--shadow-card); }
+
+  /* A grid with no columns set gets one column that may shrink below its
+     content; otherwise one long unwrapped line widens the page on phones.
+     grid-cols-* utilities still win. */
+  /* minmax(0, 1fr): a column that can shrink to 0 and grows to fill the space. */
+  .grid { grid-template-columns: minmax(0, 1fr); }
+
+  /* Wide display titles: uppercase is visual only, so strings stay sentence case. */
+  .title { font-family: var(--font-display); font-weight: 600; text-transform: uppercase; letter-spacing: -0.01em; }
+  /* Small uppercase section label; em is relative to the element's own font size. */
+  .head { font-family: var(--font-display); font-weight: 600; text-transform: uppercase; font-size: var(--text-head); line-height: 1rem; letter-spacing: 0.02em; }
+
+  /* Text input / select / textarea style shared by every form. */
+  .field-input {
+    width: 100%; /* fill the container */
+    min-height: 3rem; /* comfortable touch target */
+    border-radius: var(--radius-field);
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-surface);
+    padding: 0.625rem 0.875rem; /* vertical, then horizontal */
+    font-size: var(--text-body);
+    color: var(--color-ink);
+    transition: border-color 0.15s, box-shadow 0.15s; /* animate these two properties when they change */
+  }
+  /* ::placeholder styles the hint text shown in an empty field. */
+  .field-input::placeholder { color: var(--color-ink-4); }
+  /* :hover applies while the mouse is over the field. */
+  .field-input:hover { border-color: var(--color-line-input); }
+  /* :focus while typing in it: blue border plus a soft blue ring made with a spread shadow. */
+  .field-input:focus { outline: none; border-color: var(--color-accent-600); box-shadow: 0 0 0 4px rgb(36 71 245 / 0.12); }
+  /* Fields marked aria-invalid="true" (validation errors) get a red border, and a red ring when focused. */
+  .field-input[aria-invalid="true"] { border-color: var(--color-danger-500); }
+  .field-input[aria-invalid="true"]:focus { box-shadow: 0 0 0 4px rgb(208 59 59 / 0.12); }
+  /* Disabled fields look sunken and muted. */
+  .field-input:disabled { background: var(--color-sunken); color: var(--color-ink-3); }
+  /* textarea.field-input = a <textarea> that also has the class: taller box. */
+  textarea.field-input { min-height: 6rem; line-height: 1.5; }
+  /* @media applies the inner rules only on screens up to 640px wide; iOS zooms into inputs smaller than 16px (1rem). */
+  @media (max-width: 640px) { .field-input { font-size: 1rem; } } /* no zoom on iOS */
+
+  /* Loading placeholder (components/ui/misc.jsx Skeleton). */
+  .skeleton {
+    /* A light band in a 90deg (left-to-right) gradient; percentages are colour stop positions. */
+    background: linear-gradient(90deg, #ebe8e2 25%, #f3f1ed 50%, #ebe8e2 75%);
+    background-size: 200% 100%; /* twice as wide as the box, so it can slide */
+    animation: shimmer 1.4s infinite; /* run the keyframes below forever */
+    border-radius: 0.75rem;
+  }
+  /* `to` is the end state: slide the gradient left to make the shimmer move. */
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  /* Hide scrollbars (Firefox property, then the WebKit pseudo-element for Chrome/Safari). */
+  .scrollbar-none { scrollbar-width: none; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+  /* Thin scrollbar: thumb colour, then track colour. */
+  .scrollbar-thin { scrollbar-width: thin; scrollbar-color: var(--color-line-strong) transparent; }
+
+  /* The electric-blue glow with fluted glass stripes from the sign-in screen. */
+  .hero-blue {
+    background-color: #1c3df2; /* solid fallback colour */
+    /* radial-gradient(size at position, colour stop, ...): an ellipse glowing from just above the centre. */
+    background-image:
+      radial-gradient(120% 80% at 50% 38%, #4f6dff 0%, #2447f5 38%, #1730c4 70%, #0f1f8a 100%);
+  }
+  /* Vertical light stripes repeating every 92px; blended over the blue below. */
+  .fluted {
+    background-image: repeating-linear-gradient(90deg, rgb(255 255 255 / 0) 0 54px, rgb(255 255 255 / 0.16) 55px, rgb(255 255 255 / 0) 58px 92px);
+    mix-blend-mode: soft-light; /* how this layer's colours mix with what is underneath */
+  }
+
+  /* Space under content for the floating tab bar on phones. */
+  /* calc() does maths in CSS; env(safe-area-inset-bottom) is the height of the phone's home-indicator area. */
+  .pb-tabbar { padding-bottom: calc(6.5rem + env(safe-area-inset-bottom)); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+}
+
+/* ---------- Motion ---------- */
+/* CSS animations and transitions collapse to nothing; GSAP checks the same
+   setting itself in lib/motion.js (reduced()). */
+/* This @media query matches when the user asked the OS for reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  /* `*` is every element; ::before/::after are generated pseudo-elements. Durations become near-zero. */
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

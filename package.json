@@ -1,0 +1,24 @@
+{
+  "name": "construction-platform",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "npm --prefix client run build",
+    "lint": "eslint .",
+    "reset": "npm --prefix server run reset",
+    "smoke": "npm --prefix server run smoke",
+    "render-build": "npm ci --prefix client --include=dev && npm --prefix client run build && npm ci --prefix server --omit=dev",
+    "start": "node server/src/server.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^6.1.1",
+    "globals": "^16.5.0"
+  }
+}

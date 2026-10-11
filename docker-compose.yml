@@ -1,0 +1,19 @@
+# Optional local PostgreSQL for development. The app runs on embedded PGlite
+# by default and needs nothing here; `docker compose up -d` starts this
+# server, and setting DATABASE_URL=postgres://app:app@localhost:5432/construction
+# in server/.env makes the API use it instead (migrations run on start).
+# Data persists in the pgdata volume between restarts.
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: construction
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

@@ -1,0 +1,6 @@
+{
+  "name": "construction-platform-shared",
+  "private": true,
+  "type": "module",
+  "description": "Domain rules shared by the server and the client: stages, estimates, permissions, records, money."
+}

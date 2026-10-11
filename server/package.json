@@ -1,0 +1,20 @@
+{
+  "name": "construction-platform-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --env-file-if-exists=.env src/server.js",
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "reset": "node --env-file-if-exists=.env src/seed/run.js",
+    "smoke": "node scripts/smoke.js"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.2.1",
+    "multer": "^2.4.0",
+    "pg": "^8.23.1",
+    "zod": "^4.6.5"
+  }
+}

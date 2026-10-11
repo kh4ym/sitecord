@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+# Local variants (e.g. server/.env.public holds this machine's paths); the example file stays.
+.env.*
+!.env.example
+.tools/
+.claude/
+
+# Local database (PGlite) and uploaded evidence files
+server/.data/
+server/uploads/
+.backups/

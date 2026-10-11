@@ -1,0 +1,31 @@
+# Render Blueprint: one web service that serves the API and the built web app,
+# with a persistent disk for the embedded PostgreSQL (PGlite) database and the
+# uploaded photos. In Render: New → Blueprint → pick this repository.
+# buildCommand runs the root `render-build` script (install client with dev
+# deps, build it, then install server production deps); startCommand runs the
+# root `start` script, which serves client/dist and the API from one process.
+services:
+  - type: web
+    name: sitecord
+    runtime: node
+    plan: starter # a persistent disk needs a paid instance
+    region: frankfurt
+    buildCommand: npm run render-build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      # Seeds the demo houses on first start and shows the demo sign-in buttons.
+      - key: DEMO_MODE
+        value: "true"
+      - key: PGLITE_DIR
+        value: /var/data/pglite
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+    disk:
+      name: sitecord-data
+      mountPath: /var/data
+      sizeGB: 1
